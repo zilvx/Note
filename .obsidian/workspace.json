@@ -1,0 +1,244 @@
+{
+  "main": {
+    "id": "4898173b41781b3b",
+    "type": "split",
+    "children": [
+      {
+        "id": "588e9d2c9f888233",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "bc25a032ca0ed58b",
+            "type": "leaf",
+            "state": {
+              "type": "graph",
+              "state": {},
+              "icon": "lucide-git-fork",
+              "title": "关系图谱"
+            }
+          },
+          {
+            "id": "398ba52746a96acc",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "面试/AI/免费token.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "免费token"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "636a1eb99c85a557",
+    "type": "split",
+    "children": [
+      {
+        "id": "8dfdbe78ea6cacdd",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9225ceb5ede72bf3",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "f7a42c7f0dc0b711",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "line:(47bea89adffe853109b3e397253094bb00487c31)",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "4faff6aa98b8f7e0",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 605.171875
+  },
+  "right": {
+    "id": "a6faffb060725697",
+    "type": "split",
+    "children": [
+      {
+        "id": "278dd1ea3cc5c612",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "f142755e3bf73eb9",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "面试/C++相关/gdb调试.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "gdb调试 的反向链接列表"
+            }
+          },
+          {
+            "id": "0f3687c1c408cb72",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "cpp_project_demo/README.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "README 的出链列表"
+            }
+          },
+          {
+            "id": "05660f6e7ee0b7d4",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "987c3ac4a1f3c945",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "面试/AI/tokens.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "大纲"
+            }
+          },
+          {
+            "id": "eb7704dd399b4ab7",
+            "type": "leaf",
+            "state": {
+              "type": "claudian-view",
+              "state": {},
+              "icon": "bot",
+              "title": "Claudian"
+            }
+          }
+        ],
+        "currentTab": 4
+      }
+    ],
+    "direction": "horizontal",
+    "width": 200,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "bases:新建数据库": false,
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "realclaudian:Open Claudian": false
+    }
+  },
+  "active": "398ba52746a96acc",
+  "lastOpenFiles": [
+    "面试/AI/备忘录.md",
+    "replacements.txt",
+    "面试/AI/免费token.md",
+    "面试/AI/尚硅谷AI Coding教程.md",
+    "面试/AI/claude code 的 settings.json.md",
+    "面试/AI/claude code指令.md",
+    "面试/AI/opencode的常见指令.md",
+    "面试/Others/对工作&福利待遇的要求.md",
+    "面试/Others/面试准备.md",
+    "面试/项目相关/VSG 矢量信号发生器的产品介绍.md",
+    "未命名.canvas",
+    "2026-11-11.md",
+    "面试/项目相关/HUAWEI ibmc.md",
+    "面试/Others",
+    "面试/Others/自我介绍.md",
+    "图片/Pasted image 20261012101114.png",
+    "图片/Pasted image 20261012101217.png",
+    "面试/项目相关/Hi1620上有精简版linux，HI1711上有完整版linux，请问升级时两个linux时如何协调工作的.md",
+    "面试/项目相关/iBMC涉及的协议详解.md",
+    "面试/项目相关/ibmc 风扇调速.md",
+    "面试/项目相关/iBMC 协议栈全景.md",
+    "面试/C++相关/编译器和调试器.md",
+    "面试/项目相关/bmc的升级流程.md",
+    "面试/嵌入式/mcu通过iic协议对下挂的TM75温感、ADC电压进行数据读取功能.md",
+    "面试/嵌入式/读取TM75温感的mcu侧代码.md",
+    "面试/项目相关/Linux启动流程详解.md",
+    "面试/项目相关/ibmc的架构图.md",
+    "面试/项目相关/bmc的D-BUS.md",
+    "面试/项目相关/BMC.md",
+    "面试/嵌入式/常见的通讯协议.md",
+    "面试/项目相关/华为iBMC架构图.html",
+    "图片/Pasted image 20261012101133.png",
+    "未命名.base",
+    "图片/Pasted image 20250825233705.png",
+    "图片/Pasted image 20250825232116.png",
+    "未命名 1.base",
+    "图片/Pasted image 20260806213320.png",
+    "图片/Pasted image 20250825235656.png",
+    "未命名",
+    "面试/AI",
+    "面试/嵌入式",
+    "面试/Qt相关",
+    "面试/项目相关",
+    "图片/Pasted image 20250826232303.png"
+  ]
+}

@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>华为 iBMC 架构图</title>
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 40px 20px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  h1 {
+    text-align: center;
+    font-size: 2rem;
+    font-weight: 700;
+    background: linear-gradient(135deg, #60a5fa, #a78bfa);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .subtitle {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    margin-bottom: 40px;
+  }
+
+  /* ── 分层架构容器 ── */
+  .arch-stack { display: flex; flex-direction: column; gap: 2px; }
+
+  .layer {
+    border-radius: 12px;
+    padding: 24px 28px;
+    position: relative;
+  }
+  .layer-title {
+    font-size: 0.8rem;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 14px;
+    opacity: 0.7;
+  }
+  .layer-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .block {
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.12);
+    border-radius: 8px;
+    padding: 10px 16px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    color: #e2e8f0;
+    flex: 1 1 auto;
+    min-width: 100px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .block:hover {
+    background: rgba(255,255,255,0.15);
+    transform: translateY(-1px);
+  }
+  .block.wide { min-width: 180px; flex: 2 1 180px; }
+  .block.full { flex: 1 1 100%; }
+  .block .detail {
+    font-size: 0.72rem;
+    color: #94a3b8;
+    margin-top: 3px;
+  }
+
+  /* 各层颜色 */
+  .layer-user    { background: linear-gradient(135deg, #1e3a5f 0%, #1a2744 100%); }
+  .layer-app     { background: linear-gradient(135deg, #1e3b4f 0%, #162a3a 100%); }
+  .layer-service { background: linear-gradient(135deg, #2d1b4e 0%, #1e1535 100%); }
+  .layer-os      { background: linear-gradient(135deg, #3b2006 0%, #2a1a08 100%); }
+  .layer-driver  { background: linear-gradient(135deg, #1a3328 0%, #132620 100%); }
+  .layer-hw      { background: linear-gradient(135deg, #3b1a1a 0%, #2a1212 100%); }
+  .layer-bus     { background: linear-gradient(135deg, #1a2a3b 0%, #121e2a 100%); }
+  .layer-ext     { background: linear-gradient(135deg, #2a2a1a 0%, #1e1e12 100%); }
+
+  /* 层间箭头 */
+  .arrow-row {
+    display: flex;
+    justify-content: center;
+    padding: 4px 0;
+  }
+  .arrow-row svg { opacity: 0.4; }
+
+  /* 右侧安全列 */
+  .main-grid {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 12px;
+  }
+  .security-col {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .security-col .sec-block {
+    background: linear-gradient(135deg, #4a1942 0%, #2d1028 100%);
+    border-radius: 12px;
+    padding: 16px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+  }
+  .security-col .sec-block .sec-title {
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 1px;
+    color: #f9a8d4;
+    margin-bottom: 8px;
+  }
+  .security-col .sec-block .sec-items {
+    font-size: 0.78rem;
+    color: #e2e8f0;
+    line-height: 1.8;
+  }
+
+  /* 图例 */
+  .legend {
+    margin-top: 32px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+  }
+  .legend-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.78rem;
+    color: #94a3b8;
+  }
+  .legend-dot {
+    width: 12px; height: 12px; border-radius: 3px;
+  }
+
+  /* Mermaid 区域 */
+  .mermaid-section {
+    margin-top: 48px;
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 32px;
+  }
+  .mermaid-section h2 {
+    text-align: center;
+    font-size: 1.3rem;
+    margin-bottom: 24px;
+    color: #93c5fd;
+  }
+  .mermaid { display: flex; justify-content: center; }
+  .mermaid svg { max-width: 100%; }
+
+  /* 外部连接区 */
+  .ext-conn {
+    margin-top: 32px;
+    background: #1e293b;
+    border-radius: 12px;
+    padding: 28px;
+  }
+  .ext-conn h2 {
+    text-align: center;
+    font-size: 1.1rem;
+    margin-bottom: 16px;
+    color: #fbbf24;
+  }
+  .conn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 12px;
+  }
+  .conn-card {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 8px;
+    padding: 14px;
+  }
+  .conn-card h3 {
+    font-size: 0.85rem;
+    color: #60a5fa;
+    margin-bottom: 6px;
+  }
+  .conn-card ul {
+    list-style: none;
+    font-size: 0.78rem;
+    color: #cbd5e1;
+    line-height: 1.7;
+  }
+  .conn-card ul li::before {
+    content: "›";
+    color: #60a5fa;
+    margin-right: 6px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>华为 iBMC 系统架构</h1>
+<p class="subtitle">Intelligent Baseboard Management Controller — Hi1710 / Hi1711 芯片平台</p>
+
+<!-- ════════════ 主架构 + 安全列 ════════════ -->
+<div class="main-grid">
+
+<!-- 左侧主分层 -->
+<div class="arch-stack">
+
+  <!-- Layer 1: 用户接入层 -->
+  <div class="layer layer-user">
+    <div class="layer-title">用户 / 上层平台接入</div>
+    <div class="layer-content">
+      <div class="block">WebUI (HTTPS)<div class="detail">浏览器管理界面</div></div>
+      <div class="block">SSH CLI<div class="detail">TCP 22 命令行</div></div>
+      <div class="block">IPMI 工具<div class="detail">ipmitool / ipmicmd</div></div>
+      <div class="block">Redfish 客户端<div class="detail">REST API / JSON</div></div>
+      <div class="block">SNMP 网管<div class="detail">Zabbix / NMS</div></div>
+      <div class="block wide">SmartKit / iMaster NCE<div class="detail">华为批量管理平台</div></div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><svg width="24" height="20"><path d="M12 2 L12 18" stroke="#475569" stroke-width="2" fill="none"/><path d="M7 13 L12 18 L17 13" stroke="#475569" stroke-width="2" fill="none"/></svg></div>
+
+  <!-- Layer 2: 网络协议层 -->
+  <div class="layer layer-service">
+    <div class="layer-title">北向网络协议栈</div>
+    <div class="layer-content">
+      <div class="block">Redfish<div class="detail">RESTful / JSON / HTTPS 443</div></div>
+      <div class="block">IPMI 2.0<div class="detail">RMCP+ / UDP 623,664</div></div>
+      <div class="block">SNMP v1/v2c/v3<div class="detail">UDP 161 + Trap</div></div>
+      <div class="block">HTTPS/HTTP<div class="detail">Apache / 443,80</div></div>
+      <div class="block">SSH<div class="detail">AES-CTR / TCP 22</div></div>
+      <div class="block">NTP<div class="detail">时间同步</div></div>
+      <div class="block">Syslog<div class="detail">日志外发</div></div>
+      <div class="block">SMTP<div class="detail">告警邮件</div></div>
+      <div class="block">LDAP/AD<div class="detail">域认证</div></div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><svg width="24" height="20"><path d="M12 2 L12 18" stroke="#475569" stroke-width="2" fill="none"/><path d="M7 13 L12 18 L17 13" stroke="#475569" stroke-width="2" fill="none"/></svg></div>
+
+  <!-- Layer 3: 应用服务层 -->
+  <div class="layer layer-app">
+    <div class="layer-title">应用服务层（模块化设计）</div>
+    <div class="layer-content">
+      <div class="block">sensor_alarm<div class="detail">传感器监控 / SEL</div></div>
+      <div class="block">BMC 管理<div class="detail">FRU / 网口 / 电源</div></div>
+      <div class="block">CpuMem<div class="detail">CPU / 内存信息</div></div>
+      <div class="block">BIOS 管理<div class="detail">配置同步 / SMBIOS</div></div>
+      <div class="block">PowerMgnt<div class="detail">功率封顶 / 功耗统计</div></div>
+      <div class="block">StorageMgnt<div class="detail">RAID / 硬盘管理</div></div>
+      <div class="block">cooling_app<div class="detail">风扇调速</div></div>
+      <div class="block">UPGRADE<div class="detail">固件升级</div></div>
+      <div class="block">kvm_vmm<div class="detail">KVM / 虚拟媒体</div></div>
+      <div class="block">redfish<div class="detail">Redfish 服务引擎</div></div>
+      <div class="block">ipmi_app<div class="detail">IPMI 协议栈</div></div>
+      <div class="block">FDM 诊断<div class="detail">智能故障诊断</div></div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><svg width="24" height="20"><path d="M12 2 L12 18" stroke="#475569" stroke-width="2" fill="none"/><path d="M7 13 L12 18 L17 13" stroke="#475569" stroke-width="2" fill="none"/></svg></div>
+
+  <!-- Layer 4: 操作系统层 -->
+  <div class="layer layer-os">
+    <div class="layer-title">嵌入式操作系统（RTOS / 嵌入式 Linux）</div>
+    <div class="layer-content">
+      <div class="block wide">Apache HTTP Server<div class="detail">Web 服务 + Redfish API 宿主</div></div>
+      <div class="block">TCP/IP 网络栈<div class="detail">IPv4 / IPv6 / VLAN</div></div>
+      <div class="block">D-Bus / IPC<div class="detail">进程间通信</div></div>
+      <div class="block">文件系统<div class="detail">JFFS2 / UBIFS</div></div>
+      <div class="block">PAM 认证<div class="detail">sfcb / 用户管理</div></div>
+      <div class="block">Watchdog<div class="detail">看门狗定时</div></div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><svg width="24" height="20"><path d="M12 2 L12 18" stroke="#475569" stroke-width="2" fill="none"/><path d="M7 13 L12 18 L17 13" stroke="#475569" stroke-width="2" fill="none"/></svg></div>
+
+  <!-- Layer 5: 驱动层 -->
+  <div class="layer layer-driver">
+    <div class="layer-title">硬件驱动层</div>
+    <div class="layer-content">
+      <div class="block">I2C / SMBus 驱动<div class="detail">× 16 路控制器</div></div>
+      <div class="block">GPIO 驱动<div class="detail">LED / 按钮</div></div>
+      <div class="block">ADC 驱动<div class="detail">模拟量采集</div></div>
+      <div class="block">PWM 驱动<div class="detail">风扇转速控制</div></div>
+      <div class="block">SPI / eMMC 驱动<div class="detail">Flash 存储</div></div>
+      <div class="block">UART 驱动<div class="detail">× 8 路串口</div></div>
+      <div class="block">PCIe 驱动<div class="detail">MCTP 消息</div></div>
+      <div class="block">eSPI / LPC 驱动<div class="detail">POST 码捕获</div></div>
+      <div class="block">网络驱动<div class="detail">RMII / SGMII</div></div>
+      <div class="block">USB 驱动<div class="detail">虚拟媒体</div></div>
+      <div class="block">Video 驱动<div class="detail">KVM 帧缓冲</div></div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><svg width="24" height="20"><path d="M12 2 L12 18" stroke="#475569" stroke-width="2" fill="none"/><path d="M7 13 L12 18 L17 13" stroke="#475569" stroke-width="2" fill="none"/></svg></div>
+
+  <!-- Layer 6: 硬件总线层 -->
+  <div class="layer layer-bus">
+    <div class="layer-title">硬件总线接口</div>
+    <div class="layer-content">
+      <div class="block">I2C / SMBus<div class="detail">温度/电压/FRU/CPLD/电源</div></div>
+      <div class="block">IPMB<div class="detail">板间 I2C 管理</div></div>
+      <div class="block">PCIe + MCTP<div class="detail">RAID/NVMe/NPU</div></div>
+      <div class="block">eSPI / LPC<div class="detail">BIOS POST 码</div></div>
+      <div class="block">UART<div class="detail">SOL / 串口</div></div>
+      <div class="block">GPIO / PWM<div class="detail">LED / 风扇</div></div>
+      <div class="block">ADC<div class="detail">电压采样</div></div>
+      <div class="block">NC-SI / RMII<div class="detail">边带网络共享</div></div>
+      <div class="block">JTAG<div class="detail">调试接口</div></div>
+    </div>
+  </div>
+
+  <div class="arrow-row"><svg width="24" height="20"><path d="M12 2 L12 18" stroke="#475569" stroke-width="2" fill="none"/><path d="M7 13 L12 18 L17 13" stroke="#475569" stroke-width="2" fill="none"/></svg></div>
+
+  <!-- Layer 7: 硬件器件层 -->
+  <div class="layer layer-hw">
+    <div class="layer-title">服务器硬件（被管理对象）</div>
+    <div class="layer-content">
+      <div class="block">CPU (× 2/4)<div class="detail">PECI / MCTP</div></div>
+      <div class="block">内存 DIMM<div class="detail">SPD EEPROM</div></div>
+      <div class="block">温度传感器<div class="detail">TMP75/TMP112 等</div></div>
+      <div class="block">电压传感器<div class="detail">INA226/LTC2977</div></div>
+      <div class="block">电源模块 PSU<div class="detail">PMBus</div></div>
+      <div class="block">风扇<div class="detail">PWM + Tach</div></div>
+      <div class="block">CPLD<div class="detail">上电时序/复位</div></div>
+      <div class="block">FRU EEPROM<div class="detail">资产信息</div></div>
+      <div class="block">RAID 控制器<div class="detail">MCTP over PCIe</div></div>
+      <div class="block">NVMe SSD<div class="detail">MCTP over PCIe</div></div>
+      <div class="block">NPU / GPU<div class="detail">MCTP over PCIe</div></div>
+      <div class="block">BIOS Flash<div class="detail">SPI 访问</div></div>
+    </div>
+  </div>
+
+</div><!-- /arch-stack -->
+
+<!-- 右侧安全列 -->
+<div class="security-col">
+  <div class="sec-block">
+    <div class="sec-title">自研安全芯片</div>
+    <div class="sec-items">
+      Hi1710 / Hi1711<br>
+      集成安全核<br>
+      TCM 可信密码模块
+    </div>
+  </div>
+  <div class="sec-block">
+    <div class="sec-title">安全启动链</div>
+    <div class="sec-items">
+      BootROM<br>
+      → 签名校验<br>
+      → 固件加载<br>
+      → 可信度量传递
+    </div>
+  </div>
+  <div class="sec-block">
+    <div class="sec-title">传输加密</div>
+    <div class="sec-items">
+      TLS / HTTPS<br>
+      SSH AES-CTR<br>
+      IPMI RMCP+<br>
+      Cipher Suite 3/17
+    </div>
+  </div>
+  <div class="sec-block">
+    <div class="sec-title">访问控制</div>
+    <div class="sec-items">
+      LDAP / AD 域认证<br>
+      RBAC 角色权限<br>
+      IP/MAC 白名单<br>
+      弱口令检测
+    </div>
+  </div>
+  <div class="sec-block">
+    <div class="sec-title">数据完整性</div>
+    <div class="sec-items">
+      SEL + MD5/SHA256<br>
+      固件签名校验<br>
+      配置防篡改
+    </div>
+  </div>
+</div>
+
+</div><!-- /main-grid -->
+
+<!-- ════════════ 带内通信区 ════════════ -->
+<div class="ext-conn">
+  <h2>带内通信通道（iBMC ↔ 主机 OS）</h2>
+  <div class="conn-grid">
+    <div class="conn-card">
+      <h3>BT / KCS 接口</h3>
+      <ul>
+        <li>IPMI 本地通道</li>
+        <li>OS 侧 /dev/ipmi0 访问</li>
+        <li>SSIF (SMBus 系统接口)</li>
+      </ul>
+    </div>
+    <div class="conn-card">
+      <h3>SOL 串口重定向</h3>
+      <ul>
+        <li>Serial Over LAN</li>
+        <li>文本控制台远程转发</li>
+        <li>TCP 端口映射</li>
+      </ul>
+    </div>
+    <div class="conn-card">
+      <h3>KVM over IP</h3>
+      <ul>
+        <li>远程键盘/视频/鼠标</li>
+        <li>HTML5 / Java 客户端</li>
+        <li>端口 2198 / 2199</li>
+      </ul>
+    </div>
+    <div class="conn-card">
+      <h3>虚拟媒体</h3>
+      <ul>
+        <li>ISO/IMG 远程挂载</li>
+        <li>USB Mass Storage 模拟</li>
+        <li>远程 OS 安装</li>
+      </ul>
+    </div>
+    <div class="conn-card">
+      <h3>NC-SI 边带网络</h3>
+      <ul>
+        <li>与业务网卡共享物理口</li>
+        <li>VLAN 隔离管理/业务流量</li>
+        <li>管理平面与业务平面分离</li>
+      </ul>
+    </div>
+    <div class="conn-card">
+      <h3>iBMA Agent</h3>
+      <ul>
+        <li>主机侧代理软件</li>
+        <li>PCIe 通道上报 OS 信息</li>
+        <li>黑匣子崩溃数据写入</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ════════════ Mermaid 数据流图 ════════════ -->
+<div class="mermaid-section">
+  <h2>iBMC 数据流向图</h2>
+  <div class="mermaid">
+flowchart TB
+    subgraph External["外部管理入口"]
+        direction LR
+        Browser["浏览器 (WebUI)"]
+        CLI["SSH CLI"]
+        API["Redfish / IPMI / SNMP"]
+        Platform["SmartKit / iMaster"]
+    end
+
+    subgraph NetProto["网络协议层"]
+        direction LR
+        HTTPS["HTTPS/TLS"]
+        SSHProto["SSH"]
+        IPMIStack["IPMI RMCP+"]
+        SNMPAgent["SNMP Agent"]
+        RedfishSvc["Redfish Service"]
+    end
+
+    subgraph AppLayer["应用服务层"]
+        direction LR
+        Sensor["sensor_alarm<br/>传感器监控"]
+        BMCSvc["BMC 管理<br/>FRU/电源"]
+        KVMSvc["KVM/VMM<br/>远程控制台"]
+        UpgradeSvc["UPGRADE<br/>固件升级"]
+        DiagSvc["FDM<br/>智能诊断"]
+        StorageSvc["StorageMgnt<br/>存储管理"]
+    end
+
+    subgraph RTOS["嵌入式 Linux"]
+        direction LR
+        Apache["Apache HTTP"]
+        Dbus["D-Bus / IPC"]
+        FS["文件系统"]
+        NetStack["TCP/IP 栈"]
+    end
+
+    subgraph DriverLayer["硬件驱动层"]
+        direction LR
+        I2CDrv["I2C/SMBus ×16"]
+        GPIODrv["GPIO/PWM"]
+        UARTDrv["UART ×8"]
+        PCIDrv["PCIe/MCTP"]
+        ESPIDrv["eSPI/LPC"]
+        NetDrv["NC-SI/RMII"]
+    end
+
+    subgraph Hardware["服务器硬件"]
+        direction LR
+        Sensors["温度/电压传感器"]
+        FRU["FRU EEPROM"]
+        PSU["电源模块 (PMBus)"]
+        Fans["风扇"]
+        CPLD["CPLD"]
+        CPU_Mem["CPU / 内存"]
+        RAID["RAID / NVMe"]
+        BIOS["BIOS Flash"]
+    end
+
+    subgraph HostOS["主机 OS (带内)"]
+        direction LR
+        OS["Linux / Windows"]
+        iBMA["iBMA Agent"]
+        IPMI_Drv["IPMI 驱动"]
+    end
+
+    Browser --> HTTPS & SSHProto
+    CLI --> SSHProto
+    API --> IPMIStack & SNMPAgent & RedfishSvc
+    Platform --> RedfishSvc & SNMPAgent
+
+    HTTPS --> Apache
+    SSHProto --> AppLayer
+    IPMIStack --> Sensor & BMCSvc
+    SNMPAgent --> Sensor & BMCSvc
+    RedfishSvc --> Sensor & BMCSvc & KVMSvc & UpgradeSvc & StorageSvc
+
+    Apache --> RedfishSvc
+
+    Sensor --> Dbus
+    BMCSvc --> Dbus
+    KVMSvc --> Dbus
+    UpgradeSvc --> Dbus
+    DiagSvc --> Dbus
+    StorageSvc --> Dbus
+
+    Dbus --> I2CDrv & GPIODrv & UARTDrv & PCIDrv & ESPIDrv
+    FS --> Sensor & BMCSvc
+
+    NetStack --> NetDrv
+
+    I2CDrv --> Sensors & FRU & PSU & Fans & CPLD
+    GPIODrv --> Fans
+    UARTDrv --> CPLD
+    PCIDrv --> RAID & CPU_Mem
+    ESPIDrv --> BIOS & CPU_Mem
+    NetDrv --> HostOS
+
+    iBMA -->|"PCIe + MCTP"| PCIDrv
+    IPMI_Drv -->|"BT/KCS/SSIF"| ESPIDrv
+  </div>
+</div>
+
+<!-- 图例 -->
+<div class="legend">
+  <div class="legend-item"><div class="legend-dot" style="background:#1e3a5f"></div>用户接入层</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#2d1b4e"></div>网络协议层</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#1e3b4f"></div>应用服务层</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3b2006"></div>嵌入式 OS</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#1a3328"></div>驱动层</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#1a2a3b"></div>硬件总线</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#3b1a1a"></div>服务器硬件</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#4a1942"></div>安全体系</div>
+</div>
+
+</div><!-- /container -->
+
+<script>
+  mermaid.initialize({
+    startOnLoad: true,
+    theme: 'dark',
+    themeVariables: {
+      primaryColor: '#1e3a5f',
+      primaryTextColor: '#e2e8f0',
+      primaryBorderColor: '#475569',
+      lineColor: '#64748b',
+      secondaryColor: '#2d1b4e',
+      tertiaryColor: '#1a3328',
+      fontSize: '13px'
+    },
+    flowchart: {
+      htmlLabels: true,
+      curve: 'basis',
+      nodeSpacing: 30,
+      rankSpacing: 50
+    }
+  });
+</script>
+</body>
+</html>
